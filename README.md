@@ -4,7 +4,7 @@ Follow [@sebastianbennis on X](https://x.com/sebastianbennis) to see each new on
 
 Interface components designed and coded from scratch. Take one into your project and make it yours. New ones land here as they are finished, so star or watch this repo to keep up.
 
-## The collection
+## Latest
 
 <table>
   <tr>
@@ -20,27 +20,11 @@ Interface components designed and coded from scratch. Take one into your project
   </tr>
 </table>
 
-## Install
+[See every UI](./components)
 
-Every UI installs the same way, with its name at the end:
+## Use one
 
-```bash
-# npm
-npx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
-
-# pnpm
-pnpm dlx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
-
-# Yarn
-yarn dlx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
-
-# Bun
-bunx --bun shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
-```
-
-The files land in `components/<name>`, or `src/components/<name>` if your project has a `src` folder. You don't need shadcn/ui or Tailwind.
-
-To do it by hand, open a UI's folder and copy everything in its `src` folder into your project.
+Open any UI above. Its page has a one-line install for npm, pnpm, Yarn and Bun, or you can copy the code by hand. You don't need shadcn/ui or Tailwind.
 
 Working with Claude Code, Cursor or another AI coding tool? Point it at a UI's folder and ask it to add that UI to your project.
 
