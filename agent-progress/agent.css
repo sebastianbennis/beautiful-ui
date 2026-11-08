@@ -1,0 +1,998 @@
+/*
+  Agent UI. One language throughout: fine graduated ticks, a travelling sweep
+  of light, and exact, drawn state changes.
+
+  Adapt it here. Every rule below reads these tokens, and the tokens have no
+  specificity, so any rule of yours that sets one wins:
+
+    .my-chat .agent-ui { --agent-live: #7c5cff; --agent-surface: #101014; }
+
+  --agent-u is one design pixel. Set it (or the scale prop) to resize the set.
+*/
+
+/* Registered so a theme change fades every colour at once, with no per-element transitions. */
+@property --agent-surface { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --agent-ink { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-ink-soft { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-wave { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-live { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-live-hot { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-sheen { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-halo { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --agent-glow { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --agent-ok { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-bad { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-track { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-track-soft { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+@property --agent-track-major { syntax: '<color>'; inherits: true; initial-value: currentcolor; }
+
+:where(.agent-ui) {
+  --agent-u: 1px;
+  --agent-bezel-size: calc(84 * var(--agent-u));
+  --agent-mark-size: calc(30 * var(--agent-u));
+  --agent-font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --agent-ease-travel: cubic-bezier(0.16, 0.84, 0.24, 1);
+  --agent-ease-settle: cubic-bezier(0.34, 1.46, 0.64, 1);
+  --agent-ease-exit: cubic-bezier(0.55, 0, 0.85, 0.36);
+  --agent-ease-press: cubic-bezier(0.25, 0.75, 0.3, 1);
+  --agent-theme-fade: 320ms;
+  /* Steep in the middle, so light and dark text never sit on a matching grey for more than a few frames. */
+  --agent-theme-ease: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Dark: light does the work. */
+  --agent-surface: oklch(0.195 0.004 60);
+  --agent-ink: oklch(0.97 0.006 80);
+  --agent-ink-soft: oklch(0.72 0.007 80);
+  --agent-wave: oklch(0.66 0.012 250);
+  --agent-live: oklch(0.88 0.075 235);
+  --agent-live-hot: oklch(0.985 0.015 235);
+  --agent-sheen: oklch(0.985 0.015 235);
+  --agent-halo: oklch(0.74 0.14 240 / 0.72);
+  --agent-glow: oklch(0.76 0.13 240 / 0.34);
+  --agent-ok: oklch(0.85 0.16 158);
+  --agent-bad: oklch(0.72 0.19 25);
+  --agent-track: oklch(0.34 0.006 250);
+  --agent-track-soft: oklch(0.26 0.005 250);
+  --agent-track-major: oklch(0.46 0.006 250);
+
+  color: var(--agent-ink);
+  transition:
+    --agent-surface var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-ink var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-ink-soft var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-wave var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-live var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-live-hot var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-sheen var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-halo var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-glow var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-ok var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-bad var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-track var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-track-soft var(--agent-theme-fade) var(--agent-theme-ease),
+    --agent-track-major var(--agent-theme-fade) var(--agent-theme-ease);
+}
+
+/* Light: a printed dial. The sweep is ink, so it darkens instead of glowing. */
+:where(.agent-ui[data-theme='light']) {
+  --agent-surface: oklch(0.995 0.001 80);
+  --agent-ink: oklch(0.2 0.006 60);
+  --agent-ink-soft: oklch(0.49 0.008 60);
+  --agent-wave: oklch(0.62 0.012 250);
+  --agent-live: oklch(0.53 0.17 256);
+  --agent-live-hot: oklch(0.27 0.11 262);
+  --agent-sheen: oklch(0.6 0.19 254);
+  --agent-halo: oklch(0.6 0.17 255 / 0.42);
+  --agent-glow: oklch(0.62 0.17 255 / 0.2);
+  --agent-ok: oklch(0.55 0.14 155);
+  --agent-bad: oklch(0.56 0.21 27);
+  --agent-track: oklch(0.87 0.004 250);
+  --agent-track-soft: oklch(0.91 0.004 250);
+  --agent-track-major: oklch(0.69 0.006 250);
+}
+
+:where(.agent-ui, .agent-ui *) {
+  box-sizing: border-box;
+}
+
+/* Bezel: the shared spinner. */
+.agent-bezel {
+  --tick-width: calc(var(--agent-bezel-size) * 0.024);
+  --tick-length: calc(var(--agent-bezel-size) * 0.105);
+  --period: 1320ms;
+
+  position: relative;
+  display: block;
+  width: var(--agent-bezel-size);
+  height: var(--agent-bezel-size);
+  color: var(--agent-live);
+}
+
+.agent-bezel__halo {
+  position: absolute;
+  inset: calc(var(--agent-bezel-size) * -0.06);
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 58%, var(--agent-halo) 100%);
+  mask: radial-gradient(farthest-side, transparent 62%, #000 76%, #000 90%, transparent 100%);
+  filter: blur(calc(var(--agent-bezel-size) * 0.05));
+  animation: agent-bezel-turn var(--period) linear infinite;
+}
+
+.agent-bezel__tick {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--tick-width);
+  height: 50%;
+  margin-left: calc(var(--tick-width) / -2);
+  transform: rotate(calc(var(--i) * 360deg / var(--count)));
+  transform-origin: 50% 100%;
+}
+
+.agent-bezel__tick i {
+  display: block;
+  width: 100%;
+  height: var(--tick-length);
+  background: currentColor;
+  border-radius: 999px;
+  opacity: 0.17;
+  transform-origin: 50% 100%;
+  animation: agent-bezel-sweep var(--period) linear infinite;
+  animation-delay: calc(var(--i) / var(--count) * var(--period) - var(--period));
+}
+
+@keyframes agent-bezel-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes agent-bezel-sweep {
+  0% {
+    color: var(--agent-live-hot);
+    opacity: 1;
+    transform: scaleY(1.6);
+  }
+
+  7% {
+    opacity: 0.86;
+    transform: scaleY(1.22);
+  }
+
+  36% {
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+
+  100% {
+    opacity: 0.17;
+    transform: scaleY(1);
+  }
+}
+
+/* The mark: pending dot, live bezel, tick or cross. */
+.agent-mark {
+  --mark-colour: var(--agent-live);
+  --agent-bezel-size: var(--agent-mark-size);
+
+  position: relative;
+  display: block;
+  width: var(--agent-mark-size);
+  height: var(--agent-mark-size);
+  color: var(--mark-colour);
+}
+
+.agent-mark[data-state='failed'] {
+  --mark-colour: var(--agent-bad);
+}
+
+.agent-mark__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.agent-mark__disc {
+  fill: currentColor;
+  opacity: 0;
+  transform: scale(0.6);
+  transform-origin: 50% 50%;
+}
+
+.agent-mark__ring {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.agent-mark__halo {
+  fill: none;
+  stroke: var(--agent-track);
+  stroke-width: 1;
+  opacity: 0;
+}
+
+.agent-mark__dot {
+  fill: var(--agent-track);
+  opacity: 0;
+}
+
+.agent-mark__stroke {
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.agent-mark__live {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(0.72);
+  transition:
+    opacity 160ms var(--agent-ease-press),
+    transform 280ms var(--agent-ease-settle);
+}
+
+/* Pending: a dot inside a hairline, waiting. */
+.agent-mark[data-state='pending'] .agent-mark__halo,
+.agent-mark[data-state='pending'] .agent-mark__dot {
+  opacity: 1;
+}
+
+/* Current: the small live bezel with a lit core. */
+.agent-mark[data-state='current'] .agent-mark__live {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.agent-mark[data-state='current'] .agent-mark__dot {
+  fill: var(--agent-live-hot);
+  opacity: 1;
+  filter: drop-shadow(0 0 calc(var(--agent-mark-size) * 0.14) var(--agent-live));
+}
+
+/* Done and failed: the ring closes, the disc fills, then the stroke draws. */
+.agent-mark[data-state='done'] .agent-mark__disc,
+.agent-mark[data-state='failed'] .agent-mark__disc {
+  opacity: 0.16;
+  transform: scale(1);
+  transition:
+    opacity 260ms var(--agent-ease-press) 120ms,
+    transform 340ms var(--agent-ease-settle) 120ms;
+}
+
+.agent-mark[data-state='done'] .agent-mark__ring,
+.agent-mark[data-state='failed'] .agent-mark__ring {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 340ms var(--agent-ease-travel);
+}
+
+.agent-mark[data-state='done'] .agent-mark__stroke--tick,
+.agent-mark[data-state='failed'] .agent-mark__stroke--cross {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 280ms var(--agent-ease-travel) 200ms;
+}
+
+.agent-mark[data-state='done'] .agent-mark__art,
+.agent-mark[data-state='failed'] .agent-mark__art {
+  animation: agent-mark-land 460ms var(--agent-ease-settle) 180ms both;
+}
+
+@keyframes agent-mark-land {
+  from { transform: scale(0.9); }
+  60% { transform: scale(1.1); }
+  to { transform: scale(1); }
+}
+
+/* Fine rays leave the mark as it lands, once. */
+.agent-mark__rays {
+  position: absolute;
+  inset: 0;
+}
+
+.agent-mark__ray {
+  --ray-width: max(calc(1.5 * var(--agent-u)), calc(var(--agent-mark-size) * 0.026));
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ray-width);
+  height: calc(var(--agent-mark-size) * 0.8);
+  margin: calc(var(--agent-mark-size) * -0.8) 0 0 calc(var(--ray-width) / -2);
+  transform: rotate(calc(var(--i) * 30deg));
+  transform-origin: 50% 100%;
+}
+
+.agent-mark__ray i {
+  display: block;
+  width: 100%;
+  height: 15%;
+  background: currentColor;
+  border-radius: 999px;
+  opacity: 0;
+}
+
+.agent-mark[data-state='done'] .agent-mark__ray i,
+.agent-mark[data-state='failed'] .agent-mark__ray i {
+  animation: agent-mark-ray 520ms var(--agent-ease-travel) 240ms both;
+}
+
+@keyframes agent-mark-ray {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(var(--agent-mark-size) * 0.4)) scaleY(0.4);
+  }
+
+  32% {
+    opacity: 1;
+    transform: translateY(calc(var(--agent-mark-size) * 0.14)) scaleY(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--agent-mark-size) * -0.08)) scaleY(0.3);
+  }
+}
+
+/* Spinner */
+.agent-spinner {
+  --agent-spinner-dial: calc(84 * var(--agent-u));
+
+  display: flex;
+  align-items: center;
+  gap: calc(22 * var(--agent-u));
+}
+
+.agent-spinner__dial {
+  --agent-mark-size: var(--agent-spinner-dial);
+  --agent-bezel-size: var(--agent-spinner-dial);
+
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--agent-spinner-dial);
+  height: var(--agent-spinner-dial);
+}
+
+.agent-spinner__bezel,
+.agent-spinner__mark {
+  position: absolute;
+  inset: 0;
+}
+
+.agent-spinner__bezel {
+  transition:
+    opacity 240ms var(--agent-ease-exit),
+    transform 300ms var(--agent-ease-exit);
+}
+
+.agent-spinner__mark {
+  opacity: 0;
+}
+
+.agent-spinner[data-status='complete'] .agent-spinner__bezel,
+.agent-spinner[data-status='failed'] .agent-spinner__bezel {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.agent-spinner[data-status='complete'] .agent-spinner__mark,
+.agent-spinner[data-status='failed'] .agent-spinner__mark {
+  opacity: 1;
+}
+
+.agent-spinner[data-status='complete'] .agent-mark {
+  --mark-colour: var(--agent-ok);
+}
+
+.agent-spinner__word {
+  margin: 0;
+  font-size: calc(34 * var(--agent-u));
+  font-weight: 500;
+  line-height: calc(44 * var(--agent-u));
+  letter-spacing: -0.015em;
+  color: var(--agent-ink);
+}
+
+.agent-spinner[data-status='running'] .agent-spinner__word > span:not(.agent-spinner__dots) {
+  animation: agent-letter-wave 1500ms linear infinite;
+  animation-delay: calc(var(--i) * 130ms - 1500ms);
+}
+
+@keyframes agent-letter-wave {
+  0%, 100% { color: var(--agent-wave); }
+  22% { color: var(--agent-live-hot); }
+  50% { color: var(--agent-wave); }
+}
+
+.agent-spinner__dots {
+  color: var(--agent-ink-soft);
+}
+
+.agent-spinner[data-status='complete'] .agent-spinner__word {
+  color: var(--agent-ok);
+}
+
+.agent-spinner[data-status='failed'] .agent-spinner__word {
+  color: var(--agent-bad);
+}
+
+/* Odometer */
+.agent-odo {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: calc(112 * var(--agent-u));
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--agent-ink);
+}
+
+.agent-odo__wheels {
+  display: inline-flex;
+  height: 1.3em;
+  overflow: hidden;
+  mask: linear-gradient(transparent, #000 13%, #000 87%, transparent);
+}
+
+.agent-odo__slot,
+.agent-odo__turn,
+.agent-odo__digit {
+  display: block;
+  height: 1.3em;
+  line-height: 1.3em;
+}
+
+.agent-odo__turn {
+  position: relative;
+}
+
+.agent-odo__turn[data-way='up'] {
+  animation: agent-odo-up 200ms var(--agent-ease-travel) both;
+}
+
+.agent-odo__turn[data-way='down'] {
+  animation: agent-odo-down 200ms var(--agent-ease-travel) both;
+}
+
+@keyframes agent-odo-up {
+  from { transform: translateY(100%); }
+}
+
+@keyframes agent-odo-down {
+  from { transform: translateY(-100%); }
+}
+
+/* The outgoing digit sits on the far side of the new one, out of view once it has passed. */
+.agent-odo__digit--old {
+  position: absolute;
+  left: 0;
+}
+
+[data-way='up'] > .agent-odo__digit--old {
+  bottom: 100%;
+}
+
+[data-way='down'] > .agent-odo__digit--old {
+  top: 100%;
+}
+
+/* Leading digits take no room until they are needed, so it reads 7%, not 07%. */
+.agent-odo__leading {
+  display: block;
+  width: 0;
+  overflow: hidden;
+  transition: width 260ms var(--agent-ease-settle);
+}
+
+.agent-odo__leading[data-shown='true'] {
+  width: 0.58em;
+}
+
+.agent-odo__sign {
+  margin-left: 0.06em;
+  font-size: 0.38em;
+  font-weight: 300;
+  letter-spacing: 0;
+  color: var(--agent-ink-soft);
+}
+
+/* Progress: the graduated scale. */
+.agent-progress__reading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.agent-progress__detail {
+  margin: 0 0 calc(27 * var(--agent-u));
+  font: 500 calc(20 * var(--agent-u)) / 1 var(--agent-font-mono);
+  color: var(--agent-ink-soft);
+}
+
+.agent-progress[data-status='complete'] .agent-progress__detail {
+  color: var(--agent-ok);
+}
+
+.agent-scale {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: calc(46 * var(--agent-u));
+  margin-top: calc(12 * var(--agent-u));
+}
+
+.agent-scale__tick {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: max(1px, calc(2.4 * var(--agent-u)));
+  height: 52%;
+  background: var(--agent-track);
+  border-radius: 999px;
+  transform-origin: 50% 100%;
+  transition:
+    background-color 220ms linear,
+    height 340ms var(--agent-ease-settle);
+}
+
+.agent-scale__tick[data-major='true'] {
+  height: 100%;
+  background: var(--agent-track-major);
+}
+
+.agent-scale__tick[data-lit='true'] {
+  background: var(--agent-live);
+  animation: agent-scale-flow 1500ms var(--agent-ease-press) infinite;
+  animation-delay: calc(var(--i) * -30ms);
+}
+
+.agent-scale__tick[data-major='true'][data-lit='true'] {
+  background: var(--agent-live-hot);
+}
+
+.agent-scale__tick[data-head='true'] {
+  height: 100%;
+  background: var(--agent-live-hot);
+  animation: none;
+  transition: none;
+}
+
+@keyframes agent-scale-flow {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.78); }
+}
+
+/* The light at the moving edge, cast on the scale itself. */
+.agent-scale__glow {
+  position: absolute;
+  bottom: calc(-10 * var(--agent-u));
+  left: calc(var(--p) * 100%);
+  width: calc(58 * var(--agent-u));
+  height: calc(66 * var(--agent-u));
+  margin-left: calc(-29 * var(--agent-u));
+  background: radial-gradient(closest-side, var(--agent-glow), transparent);
+  pointer-events: none;
+}
+
+.agent-progress[data-status='complete'] .agent-scale__glow {
+  opacity: 0;
+  transition: opacity 400ms linear;
+}
+
+.agent-progress[data-status='complete'] .agent-scale__tick {
+  background: var(--agent-ok);
+  animation: none;
+  transition: background-color 220ms linear calc(var(--i) * 7ms);
+}
+
+/* Steps */
+.agent-steps {
+  --agent-mark-size: calc(30 * var(--agent-u));
+  --row: calc(45 * var(--agent-u));
+
+  position: relative;
+}
+
+.agent-steps__rail {
+  position: absolute;
+  top: calc(var(--row) / 2);
+  bottom: calc(var(--row) / 2);
+  left: calc(var(--agent-mark-size) / 2 - 1 * var(--agent-u));
+  width: calc(2 * var(--agent-u));
+  background: var(--agent-track-soft);
+  border-radius: 999px;
+}
+
+.agent-steps__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--agent-live);
+  border-radius: 999px;
+  transform: scaleY(var(--lit));
+  transform-origin: 50% 0;
+}
+
+.agent-steps[data-status='complete'] .agent-steps__fill {
+  background: var(--agent-ok);
+  transition: background-color 420ms linear;
+}
+
+.agent-steps__list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agent-steps__row {
+  display: grid;
+  grid-template-columns: var(--agent-mark-size) minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: calc(16 * var(--agent-u));
+  height: var(--row);
+  font-size: calc(22 * var(--agent-u));
+  color: var(--agent-ink-soft);
+}
+
+.agent-steps__row .agent-mark {
+  background: var(--agent-surface);
+  border-radius: 50%;
+}
+
+.agent-steps__row[data-added='true'] {
+  animation: agent-step-added 320ms var(--agent-ease-travel) both;
+}
+
+@keyframes agent-step-added {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-14 * var(--agent-u)));
+  }
+}
+
+.agent-steps__label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.agent-steps__row[data-state='pending'] .agent-steps__label {
+  opacity: 0.62;
+}
+
+.agent-steps__row[data-state='current'] .agent-steps__label {
+  font-weight: 600;
+  color: transparent;
+  background: linear-gradient(100deg, var(--agent-ink) 38%, var(--agent-sheen) 50%, var(--agent-ink) 62%) 0 0 / 260% 100%;
+  background-clip: text;
+  animation: agent-label-sheen 2100ms linear infinite;
+}
+
+@keyframes agent-label-sheen {
+  from { background-position: 130% 0; }
+  to { background-position: -130% 0; }
+}
+
+.agent-steps__row[data-state='failed'] {
+  color: var(--agent-bad);
+  font-weight: 600;
+}
+
+.agent-steps__note {
+  font: 500 calc(18 * var(--agent-u)) / 1 var(--agent-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--agent-ink-soft);
+}
+
+.agent-steps__row[data-state='current'] .agent-steps__note {
+  color: var(--agent-live);
+}
+
+.agent-steps__row[data-state='failed'] .agent-steps__note {
+  color: var(--agent-bad);
+}
+
+.agent-steps[data-status='complete'] .agent-steps__row .agent-mark {
+  --mark-colour: var(--agent-ok);
+
+  transition: color 240ms linear;
+}
+
+/* Activity */
+.agent-tape {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(56 * var(--agent-u));
+}
+
+.agent-tape i {
+  flex: none;
+  width: max(1px, calc(2 * var(--agent-u)));
+  height: 100%;
+  background: var(--agent-live);
+  border-radius: 999px;
+}
+
+.agent-tape i[data-failing='true'] {
+  background: var(--agent-bad);
+}
+
+.agent-tape__head {
+  position: absolute;
+  top: 8%;
+  right: calc(-8 * var(--agent-u));
+  bottom: 8%;
+  width: calc(46 * var(--agent-u));
+  background: radial-gradient(closest-side, var(--agent-glow), transparent);
+}
+
+.agent-log {
+  --log-row: calc(35 * var(--agent-u));
+
+  height: calc(var(--rows) * var(--log-row));
+  margin: calc(8 * var(--agent-u)) 0 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  font: 400 calc(19 * var(--agent-u)) / var(--log-row) var(--agent-font-mono);
+}
+
+.agent-log__row {
+  display: grid;
+  grid-template-columns: calc(24 * var(--agent-u)) minmax(0, 1fr);
+  align-items: center;
+  column-gap: calc(10 * var(--agent-u));
+  height: var(--log-row);
+  color: var(--agent-ink);
+}
+
+.agent-log[data-parity='0'] .agent-log__row {
+  animation: agent-log-rise-a 220ms var(--agent-ease-travel) both;
+}
+
+.agent-log[data-parity='1'] .agent-log__row {
+  animation: agent-log-rise-b 220ms var(--agent-ease-travel) both;
+}
+
+@keyframes agent-log-rise-a {
+  from { transform: translateY(var(--log-row)); }
+}
+
+@keyframes agent-log-rise-b {
+  from { transform: translateY(var(--log-row)); }
+}
+
+.agent-log__row:last-child .agent-log__text {
+  animation: agent-log-print 260ms var(--agent-ease-travel) both;
+}
+
+/* The first row is already there on the first frame. */
+.agent-log[data-parity] .agent-log__row:only-child,
+.agent-log[data-parity] .agent-log__row:only-child .agent-log__text {
+  animation: none;
+}
+
+@keyframes agent-log-print {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.agent-log__glyph {
+  --agent-mark-size: calc(21 * var(--agent-u));
+
+  display: grid;
+  place-items: center;
+}
+
+.agent-log__glyph .agent-mark {
+  --mark-colour: var(--agent-ok);
+}
+
+.agent-log__glyph .agent-mark[data-state='failed'] {
+  --mark-colour: var(--agent-bad);
+}
+
+.agent-log__pip {
+  width: calc(6 * var(--agent-u));
+  height: calc(6 * var(--agent-u));
+  background: var(--agent-track);
+  border-radius: 50%;
+}
+
+.agent-log__row[data-kind='stage'] .agent-log__pip {
+  background: var(--agent-live);
+}
+
+.agent-log__row[data-kind='stage'] .agent-log__text {
+  font-weight: 600;
+}
+
+.agent-log__row[data-kind='info'] .agent-log__text,
+.agent-log__row[data-kind='pass'] .agent-log__text {
+  color: var(--agent-ink-soft);
+}
+
+.agent-log__row[data-kind='fail'] .agent-log__text,
+.agent-log__row[data-kind='error'] .agent-log__text {
+  color: var(--agent-bad);
+}
+
+.agent-log__row[data-kind='error'] .agent-log__text,
+.agent-log__row[data-kind='done'] .agent-log__text {
+  font-weight: 600;
+}
+
+.agent-log__row[data-kind='done'] .agent-log__text {
+  color: var(--agent-ok);
+}
+
+.agent-log__text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.agent-log__add {
+  font-weight: 500;
+  color: var(--agent-ok);
+}
+
+.agent-log__del {
+  font-weight: 500;
+  color: var(--agent-bad);
+}
+
+/* Theme switch */
+.agent-theme {
+  --width: calc(92 * var(--agent-u));
+  --height: calc(46 * var(--agent-u));
+  --inset: calc(4 * var(--agent-u));
+  --thumb: calc(var(--height) - 2 * var(--inset));
+
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--width);
+  height: var(--height);
+  padding: 0;
+  color: var(--agent-ink-soft);
+  appearance: none;
+  cursor: pointer;
+  background: var(--agent-track-soft);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 max(1px, var(--agent-u)) var(--agent-track);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A comfortable target even when the set is scaled down. */
+.agent-theme::after {
+  position: absolute;
+  inset-block: min(0px, calc((var(--height) - 44px) / 2));
+  inset-inline: min(0px, calc((var(--width) - 44px) / 2));
+  content: '';
+}
+
+.agent-theme:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 max(1px, var(--agent-u)) var(--agent-track-major);
+}
+
+.agent-theme:focus-visible {
+  outline: max(2px, calc(2 * var(--agent-u))) solid var(--agent-live);
+  outline-offset: max(2px, calc(2 * var(--agent-u)));
+}
+
+.agent-theme:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.agent-theme__glyph {
+  display: block;
+  width: calc(21 * var(--agent-u));
+  height: calc(21 * var(--agent-u));
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.agent-theme__rest {
+  position: absolute;
+  top: var(--inset);
+  display: grid;
+  width: var(--thumb);
+  height: var(--thumb);
+  place-items: center;
+}
+
+.agent-theme__rest--dark {
+  left: var(--inset);
+}
+
+.agent-theme__rest--light {
+  right: var(--inset);
+}
+
+.agent-theme__thumb {
+  position: absolute;
+  top: var(--inset);
+  left: var(--inset);
+  display: block;
+  width: var(--thumb);
+  height: var(--thumb);
+  color: var(--agent-surface);
+  background: var(--agent-ink);
+  border-radius: 999px;
+  transform-origin: 50% 50%;
+  transition:
+    translate 420ms var(--agent-ease-settle),
+    scale 120ms var(--agent-ease-press);
+}
+
+.agent-theme[data-value='light'] .agent-theme__thumb {
+  translate: calc(var(--width) - var(--thumb) - 2 * var(--inset)) 0;
+}
+
+.agent-theme:active:not(:disabled) .agent-theme__thumb,
+.agent-theme[data-pressed='true'] .agent-theme__thumb {
+  scale: 1.12 0.9;
+}
+
+.agent-theme__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transition:
+    opacity 180ms linear,
+    transform 420ms var(--agent-ease-settle);
+}
+
+.agent-theme__face--light,
+.agent-theme[data-value='light'] .agent-theme__face--dark {
+  opacity: 0;
+  transform: rotate(-70deg) scale(0.6);
+}
+
+.agent-theme[data-value='light'] .agent-theme__face--light {
+  opacity: 1;
+  transform: none;
+}
+
+/* Reduced motion: every state still appears, it just does not travel. */
+@media (prefers-reduced-motion: reduce) {
+  .agent-ui,
+  .agent-ui *,
+  .agent-ui *::before,
+  .agent-ui *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .agent-bezel__tick i {
+    opacity: 0.3;
+  }
+
+  .agent-bezel__halo,
+  .agent-mark__rays,
+  .agent-scale__glow {
+    display: none;
+  }
+}
