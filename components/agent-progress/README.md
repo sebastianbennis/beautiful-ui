@@ -2,15 +2,31 @@
 
 Follow [@sebastianbennis on X](https://x.com/sebastianbennis) to see each new one first.
 
-![Agent progress, switching from the dark theme to the light theme](../assets/agent-progress/preview.gif)
+![Agent progress, switching from the dark theme to the light theme](./preview.gif)
 
 Four ways to show an AI agent is working: a spinner, a progress reading, a list of steps and a live activity log. Dark and light themes are built in.
 
 It needs React and nothing else. There is no build step, no CSS framework and no icon set.
 
-## Add it to a project
+## Install
 
-Copy this folder into your project, for example to `src/components/agent-progress`. That is the whole install, and the code is yours to change.
+```bash
+# npm
+npx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
+
+# pnpm
+pnpm dlx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
+
+# Yarn
+yarn dlx shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
+
+# Bun
+bunx --bun shadcn@latest add sebastianbennis/beautiful-ui/agent-progress
+```
+
+The files land in `components/agent-progress`, or `src/components/agent-progress` if your project has a `src` folder. You don't need shadcn/ui or Tailwind.
+
+To do it by hand, copy everything in the [`src`](./src) folder into a folder called `agent-progress` in your project. Either way, the code is yours to change.
 
 ## Use it
 
