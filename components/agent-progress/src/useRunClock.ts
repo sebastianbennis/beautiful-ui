@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 
 /** Milliseconds since `running` became true, updated every frame. Pass the result to AgentActivity as `now`. */

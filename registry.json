@@ -1,0 +1,80 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "beautiful-ui",
+  "homepage": "https://github.com/sebastianbennis/beautiful-ui",
+  "items": [
+    {
+      "name": "agent-progress",
+      "type": "registry:item",
+      "title": "Agent progress",
+      "description": "Four ways to show an AI agent is working: spinner, progress, steps and live activity, in dark and light.",
+      "files": [
+        {
+          "path": "components/agent-progress/src/agent.css",
+          "type": "registry:file",
+          "target": "components/agent-progress/agent.css"
+        },
+        {
+          "path": "components/agent-progress/src/AgentActivity.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/AgentActivity.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/AgentProgress.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/AgentProgress.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/AgentSpinner.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/AgentSpinner.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/AgentSteps.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/AgentSteps.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/AgentUI.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/AgentUI.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/Bezel.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/Bezel.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/index.ts",
+          "type": "registry:file",
+          "target": "components/agent-progress/index.ts"
+        },
+        {
+          "path": "components/agent-progress/src/Odometer.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/Odometer.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/StepMark.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/StepMark.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/ThemeSwitch.tsx",
+          "type": "registry:file",
+          "target": "components/agent-progress/ThemeSwitch.tsx"
+        },
+        {
+          "path": "components/agent-progress/src/types.ts",
+          "type": "registry:file",
+          "target": "components/agent-progress/types.ts"
+        },
+        {
+          "path": "components/agent-progress/src/useRunClock.ts",
+          "type": "registry:file",
+          "target": "components/agent-progress/useRunClock.ts"
+        }
+      ]
+    }
+  ]
+}
