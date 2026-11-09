@@ -1,0 +1,654 @@
+/* Pendant: a storm banner whose navigation is black liquid hanging from the top edge.
+   Every default sits at zero specificity, so any rule of the host's wins. Set the --pd tokens on
+   .pd to re-brand it. */
+
+:where(.pd) {
+  --pd-unit: 16px;
+  --pd-font: inherit;
+  --pd-height: 100svh;
+
+  --pd-ink: oklch(0.985 0.003 90);
+  --pd-ink-dim: oklch(0.83 0.005 90);
+  --pd-surface: oklch(0.13 0.003 265);
+  --pd-light: oklch(0.99 0.008 90);
+  --pd-action: oklch(0.95 0.006 90);
+  --pd-action-ink: oklch(0.18 0.006 90);
+  --pd-scrim: oklch(0.05 0 0 / 0.62);
+
+  --pd-sky: oklch(0.075 0.004 255);
+  --pd-glow: oklch(0.8 0.022 250);
+
+  --pd-day-sky: oklch(0.63 0.115 240);
+  --pd-day-haze: oklch(0.93 0.028 225);
+  --pd-day-cloud: oklch(0.995 0.004 90);
+  --pd-day-shade: oklch(0.8 0.04 240);
+  --pd-day-water: oklch(0.47 0.12 233);
+  --pd-day-ink: oklch(0.24 0.03 250);
+  --pd-day-ink-dim: oklch(0.38 0.03 250);
+  --pd-day-action: oklch(0.16 0.012 255);
+  --pd-day-action-ink: oklch(0.985 0.003 90);
+  --pd-day-scrim: oklch(0.86 0.04 235 / 0.5);
+
+  --pd-enter: cubic-bezier(0.2, 0.9, 0.24, 1);
+  --pd-exit: cubic-bezier(0.5, 0, 0.8, 0.3);
+}
+
+.pd {
+  position: relative;
+  /* Spacing below tightens with the banner's own width, wherever it is placed. */
+  container-type: inline-size;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  height: var(--pd-height);
+  background: var(--pd-sky);
+  color: var(--pd-ink);
+  font-family: var(--pd-font);
+  font-size: var(--pd-unit);
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:where(.pd),
+:where(.pd) :where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+:where(.pd) :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.pd) :where(button) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+:where(.pd) :where(ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(.pd) :where(h2) {
+  margin: 0;
+  font: inherit;
+}
+
+:where(.pd) :where(a, button) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A host's global link and button rules must not reach these. */
+.pd-brand,
+.pd-item,
+.pd-link,
+.pd-action,
+.pd-tab {
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.pd-weather,
+.pd-bolt,
+.pd-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pd-weather {
+  z-index: 0;
+}
+
+.pd-bolt {
+  z-index: 1;
+  opacity: 0;
+}
+
+.pd-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.pd-canvas {
+  z-index: 3;
+}
+
+.pd-surface {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pd-bar,
+.pd-mound,
+.pd-top,
+.pd-clip,
+.pd-orb {
+  z-index: 5;
+}
+
+/* Text follows the weather word by word. --pd-day is set per element as the change reaches it. */
+.pd-brand,
+.pd-item,
+.pd-action,
+.pd-panel,
+.pd-sheet,
+.pd-tab-face,
+.pd-orb {
+  --pd-day: 0;
+  --pd-now-ink: color-mix(in oklch, var(--pd-ink), var(--pd-day-ink) calc(var(--pd-day) * 100%));
+  --pd-now-dim: color-mix(in oklch, var(--pd-ink-dim), var(--pd-day-ink-dim) calc(var(--pd-day) * 100%));
+}
+
+/* The drop holding the other weather is drawn in the canvas. This is the real control over it. */
+.pd-orb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: max(var(--pd-orb, 40px), 44px);
+  height: max(var(--pd-orb, 40px), 44px);
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pd-orb:focus-visible {
+  outline: 1.5px solid var(--pd-now-ink);
+  outline-offset: 1px;
+}
+
+.pd-orb-icon {
+  display: none;
+}
+
+/* Desktop: three forms hanging from the top edge. */
+
+.pd-bar,
+.pd-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.pd-bar {
+  --pd-form-pad: clamp(calc(var(--pd-unit) * 1.5), calc(var(--pd-unit) * 1.5 + (100cqw - var(--pd-unit) * 56.25) * 0.04), calc(var(--pd-unit) * 2.25));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  padding-inline: clamp(calc(var(--pd-unit) * 1.25), calc(var(--pd-unit) * 1.25 + (100cqw - var(--pd-unit) * 56.25) * 0.0933), calc(var(--pd-unit) * 3));
+}
+
+.pd-top {
+  --pd-form-pad: clamp(calc(var(--pd-unit) * 1.375), calc(var(--pd-unit) * 1.375 + (100cqw - var(--pd-unit) * 20) * 0.2), calc(var(--pd-unit) * 2.25));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-inline: clamp(calc(var(--pd-unit) * 0.75), calc(var(--pd-unit) * 0.75 + (100cqw - var(--pd-unit) * 20) * 0.114), calc(var(--pd-unit) * 1.25));
+}
+
+.pd-side {
+  display: flex;
+}
+
+.pd-side--end {
+  justify-content: flex-end;
+}
+
+.pd-brand,
+.pd-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--pd-unit) * 4.125);
+  padding-inline: var(--pd-form-pad);
+  pointer-events: auto;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 500ms var(--pd-enter) 260ms;
+}
+
+[data-ready] .pd-brand,
+[data-ready] .pd-action {
+  opacity: 1;
+}
+
+.pd-brand {
+  color: var(--pd-now-ink);
+  outline: none;
+}
+
+.pd-action {
+  position: relative;
+  color: color-mix(in oklch, var(--pd-action-ink), var(--pd-day-action-ink) calc(var(--pd-day) * 100%));
+  font-size: calc(var(--pd-unit) * 1.0625);
+  font-weight: 600;
+  letter-spacing: 0.002em;
+  outline: none;
+}
+
+.pd-items {
+  display: flex;
+  align-items: stretch;
+  height: calc(var(--pd-unit) * 5.25);
+  padding-inline: clamp(calc(var(--pd-unit) * 1.125), calc(var(--pd-unit) * 1.125 + (100cqw - var(--pd-unit) * 56.25) * 0.0267), calc(var(--pd-unit) * 1.625));
+  pointer-events: auto;
+}
+
+.pd-items li {
+  display: flex;
+  opacity: 0;
+  transition: opacity 460ms var(--pd-enter) calc(220ms + var(--pd-i, 0) * 46ms);
+}
+
+[data-ready] .pd-items li {
+  opacity: 1;
+}
+
+.pd-item {
+  --pd-lit: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: clamp(calc(var(--pd-unit) * 0.875), calc(var(--pd-unit) * 0.875 + (100cqw - var(--pd-unit) * 56.25) * 0.02), calc(var(--pd-unit) * 1.25));
+  color: color-mix(in oklch, var(--pd-now-dim), var(--pd-now-ink) calc(var(--pd-lit) * 100%));
+  font-size: calc(var(--pd-unit) * 1.0625);
+  font-weight: 540;
+  letter-spacing: 0.002em;
+  white-space: nowrap;
+  outline: none;
+}
+
+/* While a drop hangs from it, the item's target reaches down into the drop. */
+.pd-item[data-hot]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: calc(var(--pd-unit) * 3.5);
+}
+
+.pd-item[data-disabled] {
+  color: color-mix(in oklch, var(--pd-now-dim) 44%, transparent);
+  cursor: not-allowed;
+}
+
+/* The words stay sharp. The mist is drawn on the liquid behind them, and the pointer wipes it away. */
+.pd-item-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36em;
+  border-radius: 0.35em;
+  transform-origin: 50% 50%;
+}
+
+.pd-caret {
+  width: 0.5em;
+  height: 0.3em;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.4;
+  transition: transform 300ms var(--pd-enter);
+}
+
+.pd-caret[data-open] {
+  transform: scaleY(-1);
+}
+
+.pd-item:focus-visible .pd-item-in,
+.pd-brand:focus-visible,
+.pd-link:focus-visible {
+  outline: 1.5px solid var(--pd-now-ink);
+  outline-offset: 0.3em;
+}
+
+.pd-brand:focus-visible {
+  outline-offset: -0.5em;
+  border-radius: 1.4em;
+}
+
+.pd-action:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--pd-action-ink), var(--pd-day-action-ink) calc(var(--pd-day) * 100%));
+  outline-offset: -0.5em;
+  border-radius: 1.4em;
+}
+
+/* Panels and sheets live on the poured liquid and are clipped to it. */
+
+.pd-clip {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(100%);
+  pointer-events: none;
+}
+
+.pd-panel,
+.pd-sheet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+}
+
+.pd-panel {
+  width: calc(var(--pd-unit) * 25);
+  padding: calc(var(--pd-unit) * 0.75) calc(var(--pd-unit) * 1.5) calc(var(--pd-unit) * 1.75);
+}
+
+.pd-panel[data-wide] {
+  width: calc(var(--pd-unit) * 44);
+}
+
+.pd-panel[data-state='off'],
+.pd-sheet[data-state='off'] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 120ms var(--pd-exit),
+    visibility 0s linear 120ms;
+}
+
+.pd-panel[data-state='on'],
+.pd-sheet[data-state='on'] {
+  opacity: 1;
+  transition: opacity 240ms var(--pd-enter) 60ms;
+}
+
+.pd-panel .pd-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  transform: translate3d(var(--pd-off, 0), 0, 0);
+  transition: transform 440ms var(--pd-enter);
+}
+
+.pd-panel[data-wide] .pd-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: calc(var(--pd-unit) * 0.5);
+}
+
+.pd-panel[data-state='on'] .pd-links {
+  transform: none;
+}
+
+.pd-link {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: calc(var(--pd-unit) * 0.25);
+  padding: calc(var(--pd-unit) * 0.875) calc(var(--pd-unit) * 1);
+  border-radius: calc(var(--pd-unit) * 0.75);
+  color: inherit;
+  text-align: left;
+  outline: none;
+  transition: transform 140ms var(--pd-enter);
+}
+
+.pd-link:active {
+  transform: scale(0.985);
+}
+
+.pd-link-label {
+  color: var(--pd-now-dim);
+  font-size: calc(var(--pd-unit) * 1.125);
+  font-weight: 540;
+  transition: color 160ms var(--pd-enter);
+}
+
+.pd-link[data-hot] .pd-link-label,
+.pd-link:focus-visible .pd-link-label {
+  color: var(--pd-now-ink);
+}
+
+.pd-link-detail {
+  color: color-mix(in oklch, var(--pd-now-dim) calc(74% + var(--pd-day) * 20%), transparent);
+  font-size: calc(var(--pd-unit) * 0.875);
+  line-height: 1.35;
+}
+
+.pd-links li {
+  opacity: 0;
+  transform: translate3d(0, 0.5em, 0);
+  transition:
+    opacity 110ms var(--pd-exit),
+    transform 110ms var(--pd-exit);
+}
+
+[data-state='on'] .pd-links li {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 260ms var(--pd-enter) var(--pd-delay, 0ms),
+    transform 380ms var(--pd-enter) var(--pd-delay, 0ms);
+}
+
+/* Phone: the tabs sit in the water at the foot of the banner. */
+
+.pd-mound {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--pd-unit) * 5.25 + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pd-tab-pair {
+  display: contents;
+}
+
+.pd-tab {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  outline: none;
+  -webkit-touch-callout: none;
+}
+
+.pd-tab[data-disabled] {
+  cursor: not-allowed;
+}
+
+.pd-tab-face {
+  --pd-lit: 0;
+  position: absolute;
+  top: calc((100% - env(safe-area-inset-bottom, 0px)) * 0.5);
+  left: 50%;
+  display: block;
+  border-radius: 0.5em;
+  color: color-mix(in oklch, var(--pd-now-dim), var(--pd-now-ink) calc(var(--pd-lit) * 100%));
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.pd-tab:focus-visible + .pd-tab-face {
+  outline: 1.5px solid var(--pd-now-ink);
+  outline-offset: 0.45em;
+}
+
+.pd-tab-icon {
+  display: block;
+  width: calc(var(--pd-unit) * 1.625);
+  height: calc(var(--pd-unit) * 1.625);
+}
+
+.pd-tab-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pd-tab-name {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + var(--pd-unit) * 0.25);
+  font-size: calc(var(--pd-unit) * 0.75);
+  font-weight: 560;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-50%);
+}
+
+.pd-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--pd-scrim);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pd-scrim[data-open] {
+  pointer-events: auto;
+}
+
+[data-weather='clear'] .pd-scrim {
+  background: var(--pd-day-scrim);
+}
+
+.pd-sheet {
+  padding: calc(var(--pd-unit) * 3) calc(var(--pd-unit) * 0.875) calc(var(--pd-unit) * 1.25);
+}
+
+.pd-sheet-head {
+  padding: calc(var(--pd-unit) * 0.5) calc(var(--pd-unit) * 1) calc(var(--pd-unit) * 0.5);
+  touch-action: none;
+  cursor: grab;
+}
+
+.pd-sheet-title {
+  color: var(--pd-now-ink);
+  font-size: calc(var(--pd-unit) * 1.75);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
+/* No WebGL: a designed flat version of the same object. */
+
+.pd--flat .pd-canvas,
+.pd--flat .pd-weather,
+.pd--flat .pd-bolt {
+  display: none;
+}
+
+/* Nothing pours in this version, so the labels have nothing to wait for. */
+.pd--flat .pd-brand,
+.pd--flat .pd-action,
+.pd--flat .pd-items li {
+  opacity: 1;
+}
+
+.pd--flat .pd-items,
+.pd--flat .pd-brand {
+  border-radius: 0 0 calc(var(--pd-unit) * 2) calc(var(--pd-unit) * 2);
+  background: var(--pd-surface);
+  box-shadow:
+    inset 0 -1px 0 oklch(1 0 0 / 0.42),
+    0 12px 32px oklch(0 0 0 / 0.4);
+}
+
+.pd--flat .pd-mound {
+  background: var(--pd-surface);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.42);
+}
+
+.pd--flat .pd-action {
+  border-radius: 0 0 calc(var(--pd-unit) * 2) calc(var(--pd-unit) * 2);
+  background: var(--pd-action);
+}
+
+.pd--flat .pd-clip {
+  clip-path: none;
+}
+
+.pd--flat .pd-panel,
+.pd--flat .pd-sheet {
+  border-radius: calc(var(--pd-unit) * 1.75);
+  background: var(--pd-surface);
+  box-shadow: 0 18px 44px oklch(0 0 0 / 0.5);
+}
+
+.pd--flat .pd-item[data-current] .pd-label,
+.pd--flat .pd-item[aria-current] .pd-label {
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+  text-decoration-thickness: 1px;
+}
+
+.pd--flat .pd-tab-name {
+  opacity: 1;
+}
+
+.pd--flat .pd-orb {
+  right: calc(var(--pd-unit) * 1.25);
+  left: auto;
+  top: calc(var(--pd-unit) * 4.75);
+  color: var(--pd-now-ink);
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+.pd--flat .pd-orb-icon {
+  display: block;
+  width: 60%;
+  height: 60%;
+  margin: 20%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pd--flat[data-weather='clear'] {
+  background: var(--pd-day-sky);
+}
+
+.pd--flat[data-weather='clear'] :is(.pd-brand, .pd-item, .pd-action, .pd-panel, .pd-sheet, .pd-tab-face, .pd-orb) {
+  --pd-day: 1;
+}
+
+.pd--flat[data-weather='clear'] :is(.pd-items, .pd-brand, .pd-mound, .pd-panel, .pd-sheet) {
+  background: var(--pd-day-cloud);
+  box-shadow: 0 10px 28px oklch(0.5 0.08 240 / 0.28);
+}
+
+.pd--flat[data-weather='clear'] .pd-action {
+  background: var(--pd-day-action);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd *,
+  .pd *::before,
+  .pd *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}

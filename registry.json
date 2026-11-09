@@ -4,6 +4,79 @@
   "homepage": "https://github.com/sebastianbennis/beautiful-ui",
   "items": [
     {
+      "name": "liquid-navbar",
+      "type": "registry:item",
+      "title": "Liquid navbar",
+      "description": "A navigation bar of black liquid that drips into the sea, with a storm and a sunny day.",
+      "files": [
+        {
+          "path": "components/liquid-navbar/src/Bar.tsx",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/Bar.tsx"
+        },
+        {
+          "path": "components/liquid-navbar/src/daylight.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/daylight.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/engine.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/engine.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/haptics.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/haptics.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/index.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/index.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/Mound.tsx",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/Mound.tsx"
+        },
+        {
+          "path": "components/liquid-navbar/src/pendant.css",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/pendant.css"
+        },
+        {
+          "path": "components/liquid-navbar/src/Pendant.tsx",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/Pendant.tsx"
+        },
+        {
+          "path": "components/liquid-navbar/src/shader.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/shader.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/shared.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/shared.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/types.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/types.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/water.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/water.ts"
+        },
+        {
+          "path": "components/liquid-navbar/src/weather.ts",
+          "type": "registry:file",
+          "target": "components/liquid-navbar/weather.ts"
+        }
+      ]
+    },
+    {
       "name": "agent-progress",
       "type": "registry:item",
       "title": "Agent progress",
