@@ -4,6 +4,74 @@
   "homepage": "https://github.com/sebastianbennis/beautiful-ui",
   "items": [
     {
+      "name": "pin-upload",
+      "type": "registry:item",
+      "title": "Pin upload",
+      "description": "A drag and drop upload for huge video files, on a plate of pins that becomes the video.",
+      "files": [
+        {
+          "path": "components/pin-upload/src/bed.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/bed.ts"
+        },
+        {
+          "path": "components/pin-upload/src/fallback.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/fallback.ts"
+        },
+        {
+          "path": "components/pin-upload/src/field.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/field.ts"
+        },
+        {
+          "path": "components/pin-upload/src/index.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/index.ts"
+        },
+        {
+          "path": "components/pin-upload/src/MiniBed.tsx",
+          "type": "registry:file",
+          "target": "components/pin-upload/MiniBed.tsx"
+        },
+        {
+          "path": "components/pin-upload/src/picture.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/picture.ts"
+        },
+        {
+          "path": "components/pin-upload/src/pinbed.css",
+          "type": "registry:file",
+          "target": "components/pin-upload/pinbed.css"
+        },
+        {
+          "path": "components/pin-upload/src/PinBed.tsx",
+          "type": "registry:file",
+          "target": "components/pin-upload/PinBed.tsx"
+        },
+        {
+          "path": "components/pin-upload/src/renderer.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/renderer.ts"
+        },
+        {
+          "path": "components/pin-upload/src/shader.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/shader.ts"
+        },
+        {
+          "path": "components/pin-upload/src/Transport.tsx",
+          "type": "registry:file",
+          "target": "components/pin-upload/Transport.tsx"
+        },
+        {
+          "path": "components/pin-upload/src/upload.ts",
+          "type": "registry:file",
+          "target": "components/pin-upload/upload.ts"
+        }
+      ]
+    },
+    {
       "name": "liquid-navbar",
       "type": "registry:item",
       "title": "Liquid navbar",

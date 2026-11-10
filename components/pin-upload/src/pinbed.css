@@ -1,0 +1,328 @@
+/* The whole look is these tokens. Set them on .pinbed or any parent. */
+:where(.pinbed) {
+  --pinbed-pin: 7.2px;
+  --pinbed-chalk: oklch(0.93 0.008 175);
+  --pinbed-graphite: oklch(0.27 0.012 200);
+  --pinbed-shade: oklch(0.45 0.015 215);
+  --pinbed-glint: oklch(0.99 0.004 175);
+  --pinbed-oxide: oklch(0.52 0.12 30);
+  --pinbed-blued: oklch(0.24 0.035 255);
+  --pinbed-ink: var(--pinbed-graphite);
+  --pinbed-ink-soft: var(--pinbed-shade);
+  --pinbed-button: var(--pinbed-chalk);
+  --pinbed-button-ink: var(--pinbed-graphite);
+  --pinbed-lead: var(--pinbed-graphite);
+  --pinbed-lead-ink: var(--pinbed-chalk);
+  --pinbed-drop: oklch(0.27 0.012 200 / 0.3);
+  --pinbed-radius: 14px;
+  --pinbed-ease: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --pinbed-lift: cubic-bezier(0.3, 1.5, 0.5, 1);
+  font-family: inherit;
+  color: var(--pinbed-ink);
+}
+
+/* A dark page behind the plate. Steel always sits on one. */
+:where(.pinbed[data-page='dark']) {
+  --pinbed-ink: var(--pinbed-chalk);
+  --pinbed-ink-soft: oklch(0.72 0.012 200);
+  --pinbed-button: oklch(0.34 0.012 205);
+  --pinbed-button-ink: var(--pinbed-chalk);
+  --pinbed-lead: var(--pinbed-chalk);
+  --pinbed-lead-ink: var(--pinbed-graphite);
+  --pinbed-drop: oklch(0 0 0 / 0.5);
+}
+
+:where(.pinbed[data-theme='steel']) {
+  --pinbed-ink: oklch(0.93 0.01 250);
+  --pinbed-ink-soft: oklch(0.7 0.02 250);
+  --pinbed-button: oklch(0.31 0.035 255);
+  --pinbed-button-ink: oklch(0.93 0.01 250);
+  --pinbed-lead: oklch(0.9 0.012 250);
+  --pinbed-lead-ink: var(--pinbed-blued);
+  --pinbed-drop: oklch(0 0 0 / 0.5);
+}
+
+.pinbed, .pinbed * { box-sizing: border-box; }
+
+.pinbed {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pinbed-plate {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--pinbed-radius);
+  background: var(--pinbed-chalk);
+  cursor: pointer;
+  touch-action: pan-y;
+  outline: none;
+  /* the plate's own shadow leans the way the pins' shadows do */
+  box-shadow:
+    1px 0.7px 1px oklch(0.27 0.012 200 / 0.2),
+    3px 2px 5px oklch(0.27 0.012 200 / 0.12),
+    11px 7px 22px oklch(0.27 0.012 200 / 0.12),
+    30px 20px 60px oklch(0.27 0.012 200 / 0.09);
+  transition: box-shadow 500ms var(--pinbed-ease);
+}
+
+.pinbed[data-page='dark'] .pinbed-plate {
+  box-shadow:
+    1px 0.7px 1px oklch(0 0 0 / 0.45),
+    4px 2.6px 7px oklch(0 0 0 / 0.3),
+    15px 10px 26px oklch(0 0 0 / 0.3),
+    46px 30px 84px oklch(0 0 0 / 0.34);
+}
+
+.pinbed[data-theme='steel'] .pinbed-plate {
+  background: var(--pinbed-blued);
+  box-shadow:
+    1px 0.7px 1px oklch(0 0 0 / 0.5),
+    4px 2.6px 7px oklch(0 0 0 / 0.36),
+    15px 10px 26px oklch(0 0 0 / 0.4),
+    46px 30px 84px oklch(0 0 0 / 0.42);
+}
+
+.pinbed[data-opened] .pinbed-plate { cursor: default; touch-action: auto; }
+
+.pinbed-plate:focus-visible {
+  outline: 2px solid var(--pinbed-ink);
+  outline-offset: 4px;
+}
+
+.pinbed-canvas, .pinbed-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pinbed-video { object-fit: contain; background: oklch(0.14 0.01 230); }
+
+.pinbed-deck {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(16px, 4cqw, 40px);
+  margin-top: clamp(20px, 2.6cqw, 34px);
+}
+
+.pinbed-words { min-width: 0; flex: 1 1 auto; }
+
+.pinbed-line {
+  margin: 0;
+  font-size: clamp(38px, 5.2cqw, 64px);
+  font-weight: 560;
+  font-stretch: 75%;
+  line-height: 1;
+  letter-spacing: -0.012em;
+  font-variant-numeric: tabular-nums;
+  text-wrap: balance;
+}
+
+.pinbed-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+  min-height: 1.45em;
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--pinbed-ink-soft);
+  font-variant-numeric: tabular-nums;
+  /* a name wraps after its separators, and only breaks inside a word when it has none */
+  overflow-wrap: anywhere;
+}
+
+.pinbed-name { color: var(--pinbed-ink); }
+
+.pinbed-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+
+/* One large pin. It stands, leans its shadow away from the light, and sinks when pressed. */
+.pinbed-button {
+  --pinbed-up: 3;
+  appearance: none;
+  border: 0;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 22px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 540;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--pinbed-button-ink);
+  background: var(--pinbed-button);
+  translate: 0 calc(var(--pinbed-up) * -0.5px);
+  box-shadow:
+    inset 0.5px 0.5px 0 oklch(1 0 0 / 0.3),
+    inset -0.5px -0.5px 0 oklch(0 0 0 / 0.12),
+    calc(var(--pinbed-up) * 0.6px) calc(var(--pinbed-up) * 0.5px) calc(var(--pinbed-up) * 0.7px) var(--pinbed-drop),
+    calc(var(--pinbed-up) * 1.6px) calc(var(--pinbed-up) * 1.2px) calc(var(--pinbed-up) * 2.4px) color-mix(in oklch, var(--pinbed-drop) 55%, transparent);
+  transition: translate 160ms var(--pinbed-lift), box-shadow 160ms var(--pinbed-ease);
+}
+
+.pinbed-button:hover { --pinbed-up: 5.5; }
+.pinbed-button:active { --pinbed-up: 0.5; transition-duration: 70ms; }
+.pinbed-button:focus-visible { outline: 2px solid var(--pinbed-ink); outline-offset: 3px; }
+.pinbed-button:disabled { --pinbed-up: 0; opacity: 0.55; cursor: default; }
+
+.pinbed-button--lead {
+  color: var(--pinbed-lead-ink);
+  background: var(--pinbed-lead);
+}
+
+.pinbed-button--danger { color: var(--pinbed-oxide); }
+
+.pinbed[data-page='dark'] .pinbed-button--danger,
+.pinbed[data-theme='steel'] .pinbed-button--danger { color: oklch(0.78 0.12 40); }
+
+.pinbed-queue {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  border-top: 1px solid color-mix(in oklch, var(--pinbed-ink) 14%, transparent);
+}
+
+.pinbed-row {
+  appearance: none;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 2px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklch, var(--pinbed-ink) 14%, transparent);
+  background: none;
+  color: var(--pinbed-ink-soft);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.pinbed-rowname { min-width: 0; overflow-wrap: anywhere; }
+.pinbed-rowstate { white-space: nowrap; }
+
+.pinbed-mini {
+  display: block;
+  width: 64px;
+  height: 36px;
+  border-radius: 3px;
+}
+
+.pinbed-row:hover, .pinbed-row[aria-current='true'] { color: var(--pinbed-ink); }
+.pinbed-row:focus-visible { outline: 2px solid var(--pinbed-ink); outline-offset: 2px; }
+
+.pinbed-transport {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  animation: pinbed-rise 420ms var(--pinbed-ease) both;
+}
+
+.pinbed-play {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--pinbed-ink);
+  background: none;
+  cursor: pointer;
+}
+
+.pinbed-play svg { fill: currentColor; }
+.pinbed-play:hover { background: color-mix(in oklch, var(--pinbed-ink) 8%, transparent); }
+.pinbed-play:focus-visible { outline: 2px solid var(--pinbed-ink); outline-offset: 2px; }
+
+.pinbed-scrub { position: relative; height: 24px; }
+
+.pinbed-scrubpins {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.pinbed-scrubpins i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--pinbed-ink-soft);
+  opacity: 0.32;
+  transition: translate 120ms var(--pinbed-lift), opacity 120ms linear;
+}
+
+.pinbed-scrubpins i[data-up='1'] {
+  opacity: 1;
+  background: var(--pinbed-ink);
+  translate: 0 -2px;
+  box-shadow: 1.5px 2.5px 1.5px color-mix(in oklch, var(--pinbed-ink) 30%, transparent);
+}
+
+.pinbed-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pinbed-range:focus-visible + *, .pinbed-scrub:has(.pinbed-range:focus-visible) {
+  outline: 2px solid var(--pinbed-ink);
+  outline-offset: 2px;
+}
+
+.pinbed-clock {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pinbed-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.pinbed-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The transport takes up its room as it arrives, so the words under it glide down and never jump.
+   52px is its own height and the gap above it. */
+@keyframes pinbed-rise {
+  from { opacity: 0; translate: 0 -10px; margin-bottom: -52px; }
+  to { opacity: 1; translate: 0 0; margin-bottom: 0; }
+}
+
+@container (max-width: 560px) {
+  .pinbed-deck { flex-direction: column; align-items: stretch; }
+  .pinbed-actions { flex-wrap: wrap; }
+  .pinbed-actions .pinbed-button { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pinbed-button, .pinbed-scrubpins i { transition: none; }
+  .pinbed-transport { animation: none; }
+}
