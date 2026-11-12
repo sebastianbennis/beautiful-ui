@@ -9,25 +9,26 @@ Interface components designed and coded from scratch. Take one into your project
 <table>
   <tr>
     <td width="50%" valign="top">
+      <a href="components/glass-player"><img src="components/glass-player/preview.gif" alt="a hand pressing play, pulling the ribbon of music back and forward under a glass lens, switching to the light theme, skipping and stopping"></a>
+      <h3><a href="components/glass-player">Glass player</a></h3>
+      A music player with five glass keys and a ribbon of music you can drag under a glass lens.
+    </td>
+    <td width="50%" valign="top">
       <a href="components/pin-upload"><img src="components/pin-upload/preview.gif" alt="a video dropped on a plate of pins that press its picture up as it uploads, then sink to leave the video playing"></a>
       <h3><a href="components/pin-upload">Pin upload</a></h3>
       A drag and drop upload for huge video files, on a plate of pins that becomes the video.
     </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
       <a href="components/liquid-navbar"><img src="components/liquid-navbar/preview.gif" alt="black liquid hanging from the top of the page and dripping through the rain into a dark sea"></a>
       <h3><a href="components/liquid-navbar">Liquid navbar</a></h3>
       A navigation bar of black liquid that drips into the sea, with a storm and a sunny day.
     </td>
-  </tr>
-  <tr>
     <td width="50%" valign="top">
       <a href="components/agent-progress"><img src="components/agent-progress/preview.gif" alt="Agent progress, switching from the dark theme to the light theme"></a>
       <h3><a href="components/agent-progress">Agent progress</a></h3>
       Four ways to show an AI agent is working, in dark and light.
-    </td>
-    <td width="50%" valign="middle" align="center">
-      More on the way.<br>
-      <a href="https://x.com/sebastianbennis">Follow on X</a> to see the next one first.
     </td>
   </tr>
 </table>

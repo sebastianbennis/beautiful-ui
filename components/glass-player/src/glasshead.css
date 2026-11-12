@@ -1,0 +1,371 @@
+/* Glass head. Every default sits in :where(), so any rule of yours wins. */
+:where(.glasshead) {
+  --glasshead-unit: 8px;
+  --glasshead-tint: oklch(0.68 0.19 45);
+  --glasshead-deck: oklch(0.235 0.02 257);
+  --glasshead-deck-hi: oklch(0.31 0.024 257);
+  --glasshead-well: oklch(0.145 0.016 257);
+  --glasshead-ink: oklch(0.965 0.005 250);
+  --glasshead-ink-soft: oklch(0.72 0.018 252);
+  --glasshead-warn: oklch(0.8 0.13 70);
+  --glasshead-ease: cubic-bezier(0.22, 0.9, 0.24, 1);
+  --glasshead-ease-press: cubic-bezier(0.3, 0, 0.5, 1);
+
+  /* Glass, drawn for a dark deck: it shows by its highlights. */
+  --glasshead-light: 0;
+  --glasshead-key-fill: linear-gradient(180deg, oklch(1 0 0 / 0.15), oklch(1 0 0 / 0.045) 46%, oklch(0 0 0 / 0.14));
+  --glasshead-edge-hi: oklch(1 0 0 / 0.34);
+  --glasshead-edge-lo: oklch(0 0 0 / 0.42);
+  --glasshead-edge: oklch(1 0 0 / 0.07);
+  --glasshead-sheen: oklch(1 0 0 / 0.2);
+  --glasshead-shade-1: oklch(0.08 0.02 257 / 0.5);
+  --glasshead-shade-2: oklch(0.08 0.02 257 / 0.34);
+  --glasshead-shade-3: oklch(0.08 0.02 257 / 0.26);
+  --glasshead-lit-ink: color-mix(in oklch, var(--glasshead-tint), white 62%);
+  --glasshead-lit: color-mix(in oklch, var(--glasshead-tint) 82%, transparent);
+  --glasshead-lx: 0;
+  --glasshead-ly: 0;
+}
+
+:where(.glasshead[data-theme='light']) {
+  --glasshead-deck: oklch(0.955 0.006 255);
+  --glasshead-deck-hi: oklch(0.995 0.002 255);
+  --glasshead-well: oklch(0.885 0.011 255);
+  --glasshead-ink: oklch(0.25 0.025 257);
+  --glasshead-ink-soft: oklch(0.5 0.025 257);
+  --glasshead-warn: oklch(0.52 0.14 50);
+  /* Clear glass on porcelain: it shows by its shadows. */
+  --glasshead-light: 1;
+  --glasshead-key-fill: linear-gradient(180deg, oklch(1 0 0 / 0.95), oklch(1 0 0 / 0.5) 46%, oklch(0.6 0.03 257 / 0.14));
+  --glasshead-edge-hi: oklch(1 0 0 / 1);
+  --glasshead-edge-lo: oklch(0.4 0.04 257 / 0.22);
+  --glasshead-edge: oklch(0.4 0.04 257 / 0.1);
+  --glasshead-sheen: oklch(1 0 0 / 0.9);
+  --glasshead-shade-1: oklch(0.35 0.05 257 / 0.2);
+  --glasshead-shade-2: oklch(0.35 0.05 257 / 0.13);
+  --glasshead-shade-3: oklch(0.35 0.05 257 / 0.1);
+  --glasshead-lit-ink: color-mix(in oklch, var(--glasshead-tint), black 38%);
+  --glasshead-lit: color-mix(in oklch, var(--glasshead-tint) 58%, transparent);
+}
+
+@media (prefers-color-scheme: light) {
+  :where(.glasshead:not([data-theme])) {
+    --glasshead-deck: oklch(0.955 0.006 255);
+    --glasshead-deck-hi: oklch(0.995 0.002 255);
+    --glasshead-well: oklch(0.885 0.011 255);
+    --glasshead-ink: oklch(0.25 0.025 257);
+    --glasshead-ink-soft: oklch(0.5 0.025 257);
+    --glasshead-warn: oklch(0.52 0.14 50);
+    --glasshead-light: 1;
+    --glasshead-key-fill: linear-gradient(180deg, oklch(1 0 0 / 0.95), oklch(1 0 0 / 0.5) 46%, oklch(0.6 0.03 257 / 0.14));
+    --glasshead-edge-hi: oklch(1 0 0 / 1);
+    --glasshead-edge-lo: oklch(0.4 0.04 257 / 0.22);
+    --glasshead-edge: oklch(0.4 0.04 257 / 0.1);
+    --glasshead-sheen: oklch(1 0 0 / 0.9);
+    --glasshead-shade-1: oklch(0.35 0.05 257 / 0.2);
+    --glasshead-shade-2: oklch(0.35 0.05 257 / 0.13);
+    --glasshead-shade-3: oklch(0.35 0.05 257 / 0.1);
+    --glasshead-lit-ink: color-mix(in oklch, var(--glasshead-tint), black 38%);
+    --glasshead-lit: color-mix(in oklch, var(--glasshead-tint) 58%, transparent);
+  }
+}
+
+:where(.glasshead),
+:where(.glasshead) *,
+:where(.glasshead) *::before,
+:where(.glasshead) *::after {
+  box-sizing: border-box;
+}
+
+:where(.glasshead) {
+  --u: var(--glasshead-unit);
+  position: relative;
+  display: grid;
+  gap: calc(var(--u) * 2.25);
+  width: 100%;
+  max-width: calc(var(--u) * 70);
+  padding: calc(var(--u) * 2.5);
+  border-radius: calc(var(--u) * 4.5);
+  color: var(--glasshead-ink);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .55 -.12'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"),
+    linear-gradient(155deg, var(--glasshead-deck-hi), var(--glasshead-deck) 58%);
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 1px 0 var(--glasshead-edge-hi),
+    inset 0 0 0 1px var(--glasshead-edge),
+    1px 2px 3px var(--glasshead-shade-1),
+    6px 14px 28px var(--glasshead-shade-2),
+    16px 40px 80px var(--glasshead-shade-3);
+  line-height: 1.25;
+  text-align: left;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(.glasshead-window) {
+  position: relative;
+  height: calc(var(--u) * 17);
+  border-radius: calc(var(--u) * 2);
+  overflow: hidden;
+  background: var(--glasshead-well);
+  box-shadow:
+    inset 2px 3px 7px var(--glasshead-shade-1),
+    inset 0 0 0 1px var(--glasshead-edge-lo),
+    0 1px 0 var(--glasshead-edge-hi);
+}
+
+:where(.glasshead-window canvas) {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:where(.glasshead-ribbon) {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  cursor: grab;
+  touch-action: pan-y;
+  outline: none;
+}
+:where(.glasshead-ribbon:active) {
+  cursor: grabbing;
+}
+:where(.glasshead-ribbon:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--glasshead-tint), var(--glasshead-ink) 30%);
+  outline-offset: -2px;
+}
+
+:where(.glasshead-meta) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: calc(var(--u) * 2);
+  align-items: start;
+  padding: 0 calc(var(--u) * 0.75);
+}
+:where(.glasshead-title) {
+  overflow: hidden;
+  font-size: calc(var(--u) * 2.25);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+:where(.glasshead-artist, .glasshead-left) {
+  margin-top: calc(var(--u) * 0.375);
+  overflow: hidden;
+  color: var(--glasshead-ink-soft);
+  font-size: calc(var(--u) * 1.75);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+:where(.glasshead-artist[data-error]) {
+  color: var(--glasshead-warn);
+}
+:where(.glasshead-times) {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+:where(.glasshead-time) {
+  font-size: calc(var(--u) * 2.25);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+:where(.glasshead-keys) {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr;
+  gap: calc(var(--u) * 1.25);
+}
+
+:where(.glasshead-key) {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: calc(var(--u) * 8);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--u) * 2);
+  color: var(--glasshead-ink);
+  font: inherit;
+  background: var(--glasshead-key-fill);
+  box-shadow:
+    inset 0 1px 0 var(--glasshead-edge-hi),
+    inset 0 -1px 0 var(--glasshead-edge-lo),
+    inset 0 0 0 1px var(--glasshead-edge),
+    1px 1px 1px var(--glasshead-shade-1),
+    2px 5px 9px var(--glasshead-shade-2),
+    5px 12px 22px var(--glasshead-shade-3);
+  cursor: pointer;
+  outline: none;
+  overflow: hidden;
+  transition:
+    transform 320ms var(--glasshead-ease),
+    box-shadow 320ms var(--glasshead-ease),
+    color 320ms var(--glasshead-ease);
+}
+
+/* The gloss on each key follows the same light as the lens. */
+:where(.glasshead-key)::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    130% 95% at calc(26% + var(--glasshead-lx) * 26%) calc(-18% + var(--glasshead-ly) * 22%),
+    var(--glasshead-sheen),
+    transparent 62%
+  );
+  opacity: 0.62;
+  pointer-events: none;
+  transition: opacity 200ms var(--glasshead-ease);
+}
+
+/* A latched key is lit from its lower edge in the colour of the ribbon. */
+:where(.glasshead-key)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(85% 120% at 50% 128%, var(--glasshead-lit), transparent 72%),
+    linear-gradient(0deg, color-mix(in oklch, var(--glasshead-lit) 26%, transparent), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 380ms var(--glasshead-ease);
+}
+
+:where(.glasshead-key svg) {
+  position: relative;
+  z-index: 1;
+  width: calc(var(--u) * 3);
+  height: calc(var(--u) * 3);
+  fill: currentColor;
+}
+:where(.glasshead-key-play svg) {
+  width: calc(var(--u) * 3.75);
+  height: calc(var(--u) * 3.75);
+}
+
+:where(.glasshead-key:hover:not(:disabled))::before {
+  opacity: 1;
+}
+
+:where(.glasshead-key[aria-pressed='true']) {
+  color: var(--glasshead-lit-ink);
+  transform: translateY(calc(var(--u) * 0.125));
+  box-shadow:
+    inset 0 1px 0 var(--glasshead-edge-hi),
+    inset 0 -1px 0 var(--glasshead-edge-lo),
+    inset 0 0 0 1px var(--glasshead-edge),
+    1px 1px 1px var(--glasshead-shade-1),
+    1px 3px 5px var(--glasshead-shade-2),
+    2px 6px 12px var(--glasshead-shade-3);
+}
+:where(.glasshead-key[aria-pressed='true'])::after {
+  opacity: 1;
+}
+:where(.glasshead[data-loading] .glasshead-key[aria-pressed='true'])::after {
+  animation: glasshead-breathe 900ms var(--glasshead-ease-press) infinite alternate;
+}
+
+:where(.glasshead-key:active:not(:disabled)) {
+  transform: translateY(calc(var(--u) * 0.3)) scale(0.985);
+  box-shadow:
+    inset 0 1px 0 var(--glasshead-edge-hi),
+    inset 0 -1px 0 var(--glasshead-edge-lo),
+    inset 0 0 0 1px var(--glasshead-edge),
+    0 1px 1px var(--glasshead-shade-1),
+    1px 1px 2px var(--glasshead-shade-2),
+    1px 2px 4px var(--glasshead-shade-3);
+  transition-duration: 110ms;
+  transition-timing-function: var(--glasshead-ease-press);
+}
+
+:where(.glasshead-key:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--glasshead-tint), var(--glasshead-ink) 30%);
+  outline-offset: 3px;
+}
+
+:where(.glasshead-key:disabled) {
+  color: color-mix(in oklch, var(--glasshead-ink-soft) 50%, transparent);
+  box-shadow:
+    inset 0 1px 0 var(--glasshead-edge),
+    inset 0 0 0 1px var(--glasshead-edge);
+  cursor: default;
+}
+:where(.glasshead-key:disabled)::before {
+  opacity: 0.25;
+}
+
+@keyframes glasshead-breathe {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.4;
+  }
+}
+
+/* With WebGL2 the five keys are drawn as thick glass on one canvas behind the buttons,
+   and each button keeps only its icon and its focus ring. */
+:where(.glasshead-keybed) {
+  position: absolute;
+  top: calc(var(--u) * -2.25);
+  left: calc(var(--u) * -2.25);
+  width: calc(100% + var(--u) * 4.5);
+  height: calc(100% + var(--u) * 4.5);
+  border-radius: 0 0 calc(var(--u) * 4.25) calc(var(--u) * 4.25);
+  pointer-events: none;
+  visibility: hidden;
+}
+:where(.glasshead[data-keys='glass'] .glasshead-keybed) {
+  visibility: visible;
+}
+:where(
+  .glasshead[data-keys='glass'] .glasshead-key,
+  .glasshead[data-keys='glass'] .glasshead-key:active,
+  .glasshead[data-keys='glass'] .glasshead-key[aria-pressed='true'],
+  .glasshead[data-keys='glass'] .glasshead-key:disabled
+) {
+  background: none;
+  box-shadow: none;
+  transform: none;
+  overflow: visible;
+  transition: color 320ms var(--glasshead-ease);
+}
+:where(.glasshead[data-keys='glass'] .glasshead-key)::before,
+:where(.glasshead[data-keys='glass'] .glasshead-key)::after {
+  content: none;
+}
+/* The icon is cut into the underside of the glass, so it rides down with the key and its shadow closes up. */
+:where(.glasshead[data-keys='glass'] .glasshead-key svg) {
+  --d: var(--glasshead-kd, 0);
+  transform: translateY(calc(var(--d) * var(--u) * 0.12)) scale(calc(1 - var(--d) * 0.035));
+  filter: drop-shadow(
+    calc((1 - var(--d)) * var(--u) * 0.1) calc((1 - var(--d)) * var(--u) * 0.24) calc(var(--u) * 0.14)
+      var(--glasshead-shade-1)
+  );
+}
+:where(.glasshead[data-keys='glass'] .glasshead-key[aria-pressed='true'] svg) {
+  filter: drop-shadow(
+      calc((1 - var(--d)) * var(--u) * 0.1) calc((1 - var(--d)) * var(--u) * 0.24) calc(var(--u) * 0.14)
+        var(--glasshead-shade-1)
+    )
+    drop-shadow(0 0 calc(var(--u) * 0.7) var(--glasshead-lit));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.glasshead-key),
+  :where(.glasshead-key)::before,
+  :where(.glasshead-key)::after {
+    transition-duration: 1ms;
+    animation: none;
+  }
+}

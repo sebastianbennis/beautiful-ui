@@ -4,6 +4,64 @@
   "homepage": "https://github.com/sebastianbennis/beautiful-ui",
   "items": [
     {
+      "name": "glass-player",
+      "type": "registry:item",
+      "title": "Glass player",
+      "description": "A music player with five glass keys and a ribbon of music you can drag under a glass lens.",
+      "files": [
+        {
+          "path": "components/glass-player/src/engine.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/engine.ts"
+        },
+        {
+          "path": "components/glass-player/src/glasshead.css",
+          "type": "registry:file",
+          "target": "components/glass-player/glasshead.css"
+        },
+        {
+          "path": "components/glass-player/src/GlassHead.tsx",
+          "type": "registry:file",
+          "target": "components/glass-player/GlassHead.tsx"
+        },
+        {
+          "path": "components/glass-player/src/icons.tsx",
+          "type": "registry:file",
+          "target": "components/glass-player/icons.tsx"
+        },
+        {
+          "path": "components/glass-player/src/index.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/index.ts"
+        },
+        {
+          "path": "components/glass-player/src/keys.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/keys.ts"
+        },
+        {
+          "path": "components/glass-player/src/peaks.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/peaks.ts"
+        },
+        {
+          "path": "components/glass-player/src/ribbon.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/ribbon.ts"
+        },
+        {
+          "path": "components/glass-player/src/scrub.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/scrub.ts"
+        },
+        {
+          "path": "components/glass-player/src/types.ts",
+          "type": "registry:file",
+          "target": "components/glass-player/types.ts"
+        }
+      ]
+    },
+    {
       "name": "pin-upload",
       "type": "registry:item",
       "title": "Pin upload",
