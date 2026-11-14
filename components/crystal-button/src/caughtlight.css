@@ -1,0 +1,300 @@
+/* Caught light. Every default sits in :where(), so any rule of yours wins. */
+:where(.caughtlight) {
+  /* One length sizes the whole button. 8px gives a 64px button, 5px a 40px one. */
+  --caughtlight-unit: 8px;
+  /* The colour of light, the colour of the glass, and the words. */
+  --caughtlight-light: oklch(0.985 0.032 95);
+  --caughtlight-glass: oklch(0.225 0.024 172);
+  --caughtlight-ink: oklch(0.955 0.012 150);
+  --caughtlight-ink-lit: oklch(0.21 0.03 172);
+  --caughtlight-warn: oklch(0.82 0.12 62);
+  --caughtlight-ring: var(--caughtlight-ink);
+  --caughtlight-radius: 999px;
+  /* How round the body is: 1 is a marble, less is a flatter lens. */
+  --caughtlight-rise: 1;
+  /* How far the shadow and the light it throws reach across the page. */
+  --caughtlight-spill: calc(var(--caughtlight-unit) * 5);
+  --caughtlight-shade: oklch(0.1 0.02 172);
+  --caughtlight-ease: cubic-bezier(0.2, 0.86, 0.24, 1);
+  --caughtlight-ease-away: cubic-bezier(0.5, 0, 0.9, 0.4);
+  /* How far the glass stays clear around the words. Wider while light is moving behind them. */
+  --caughtlight-clear: calc(var(--caughtlight-unit) * 0.4);
+  /* 0 at night, 1 by day. By day the glass mirrors a brighter room and throws a shadow you can see. */
+  --caughtlight-day: 0;
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  height: calc(var(--caughtlight-unit) * 8);
+  min-width: calc(var(--caughtlight-unit) * 24);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--caughtlight-radius);
+  background: none;
+  font-family: inherit;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  appearance: none;
+  isolation: isolate;
+  outline: none;
+}
+
+/* By day the same glass lies on a pale page: it shows more of its colour, throws a real shadow,
+   and the light it gathers lands on the page beside it. */
+:where(.caughtlight[data-theme='light']) {
+  --caughtlight-light: oklch(0.995 0.022 95);
+  --caughtlight-glass: oklch(0.38 0.064 170);
+  --caughtlight-ink: oklch(0.975 0.012 150);
+  --caughtlight-ink-lit: oklch(0.2 0.03 172);
+  --caughtlight-warn: oklch(0.88 0.1 75);
+  --caughtlight-shade: oklch(0.3 0.045 172);
+  --caughtlight-day: 1;
+}
+
+@media (prefers-color-scheme: light) {
+  :where(.caughtlight:not([data-theme])) {
+    --caughtlight-light: oklch(0.995 0.022 95);
+    --caughtlight-glass: oklch(0.38 0.064 170);
+    --caughtlight-ink: oklch(0.975 0.012 150);
+    --caughtlight-ink-lit: oklch(0.2 0.03 172);
+    --caughtlight-warn: oklch(0.88 0.1 75);
+    --caughtlight-shade: oklch(0.3 0.045 172);
+    --caughtlight-day: 1;
+  }
+}
+
+:where(.caughtlight) *,
+:where(.caughtlight) *::before,
+:where(.caughtlight) *::after {
+  box-sizing: border-box;
+}
+
+/* The canvas is the whole button, and reaches past it for the shadow and the light on the page.
+   It also carries the look to the engine, on properties that paint nothing on a canvas and that no reset touches. */
+:where(.caughtlight-canvas) {
+  position: absolute;
+  left: calc(var(--caughtlight-spill) * -1);
+  top: calc(var(--caughtlight-spill) * -1);
+  width: calc(100% + var(--caughtlight-spill) * 2);
+  height: calc(100% + var(--caughtlight-spill) * 2);
+  max-width: none;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+  color: var(--caughtlight-light);
+  caret-color: var(--caughtlight-glass);
+  outline: 0 solid var(--caughtlight-shade);
+  word-spacing: var(--caughtlight-spill);
+}
+
+/* Every word sits in the same cell, so the button is as wide as its longest word and never jumps. */
+:where(.caughtlight-words) {
+  display: grid;
+  place-items: center;
+  /* The words live on a span, so a reset aimed at buttons cannot shrink or recolour them. */
+  padding: 0 calc(var(--caughtlight-unit) * 4.6);
+  color: var(--caughtlight-ink);
+  font-size: calc(var(--caughtlight-unit) * 2.25);
+  font-weight: 560;
+  line-height: 1;
+  letter-spacing: -0.006em;
+  font-variant-numeric: tabular-nums;
+  transition:
+    transform 140ms var(--caughtlight-ease),
+    color 260ms var(--caughtlight-ease);
+}
+
+:where(.caughtlight-word) {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(calc(var(--caughtlight-unit) * 0.7));
+  /* Light passes behind the letters, never over them: each one carries a halo of the glass. */
+  text-shadow:
+    0 0 calc(var(--caughtlight-clear) * 0.3) var(--caughtlight-halo, var(--caughtlight-glass)),
+    0 0 var(--caughtlight-clear) var(--caughtlight-halo, var(--caughtlight-glass)),
+    0 0 calc(var(--caughtlight-clear) * 2) var(--caughtlight-halo, var(--caughtlight-glass));
+  transition:
+    opacity 130ms var(--caughtlight-ease-away),
+    transform 130ms var(--caughtlight-ease-away),
+    visibility 0s 130ms;
+}
+
+:where(.caughtlight[data-status='idle'] [data-word='idle']),
+:where(.caughtlight[data-status='working'] [data-word='working']),
+:where(.caughtlight[data-status='done'] [data-word='done']),
+:where(.caughtlight[data-status='failed'] [data-word='failed']) {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 280ms 90ms var(--caughtlight-ease),
+    transform 380ms 90ms var(--caughtlight-ease),
+    visibility 0s;
+}
+
+/* While a job runs, the light fades as it passes behind the words. */
+:where(.caughtlight[data-status='working']) {
+  --caughtlight-clear: calc(var(--caughtlight-unit) * 0.95);
+}
+
+/* Full of light: the words turn dark and their halo turns to light. */
+:where(.caughtlight[data-status='done']) {
+  --caughtlight-halo: transparent;
+}
+
+:where(.caughtlight[data-status='done']) :where(.caughtlight-words) {
+  color: var(--caughtlight-ink-lit);
+}
+
+:where(.caughtlight[data-status='failed']) :where(.caughtlight-words) {
+  color: var(--caughtlight-warn);
+}
+
+:where(.caughtlight[data-pressed]) :where(.caughtlight-words) {
+  transform: translateY(calc(var(--caughtlight-unit) * 0.14)) scale(0.985);
+  transition-duration: 90ms;
+}
+
+:where(.caughtlight:focus-visible) {
+  outline: calc(var(--caughtlight-unit) * 0.25) solid var(--caughtlight-ring);
+  outline-offset: calc(var(--caughtlight-unit) * 0.5);
+}
+
+:where(.caughtlight:disabled) :where(.caughtlight-words) {
+  color: color-mix(in oklch, var(--caughtlight-ink) 42%, var(--caughtlight-glass));
+}
+
+:where(.caughtlight[aria-disabled='true']) {
+  cursor: progress;
+}
+
+:where(.caughtlight:disabled) {
+  cursor: not-allowed;
+}
+
+:where(.caughtlight-status) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Without WebGL2: the same body drawn with gradients. The glass, the glow at its far end, the
+   window on its shoulder, the stroke of light along its top, and, while a job runs, drawn furrows
+   with the light going from cell to cell. */
+:where(.caughtlight-drawn) {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 5% 17% at 8% 33%, color-mix(in oklch, white 92%, transparent) 0 62%, transparent 70%),
+    linear-gradient(90deg, transparent 27%, color-mix(in oklch, white 52%, transparent) 34% 76%, transparent 84%) 0 21% / 100% calc(var(--caughtlight-unit) * 0.13) no-repeat,
+    radial-gradient(70% 150% at 104% 62%, color-mix(in oklch, var(--caughtlight-glass), var(--caughtlight-light) 34%), transparent 62%),
+    linear-gradient(color-mix(in oklch, var(--caughtlight-glass), black 34%), color-mix(in oklch, var(--caughtlight-glass), black 22%));
+  box-shadow:
+    inset calc(var(--caughtlight-unit) * 0.12) calc(var(--caughtlight-unit) * 0.12) 0 color-mix(in oklch, var(--caughtlight-light) 32%, transparent),
+    inset 0 0 0 calc(var(--caughtlight-unit) * 0.1) color-mix(in oklch, var(--caughtlight-light) 9%, transparent),
+    inset 0 calc(var(--caughtlight-unit) * -0.9) calc(var(--caughtlight-unit) * 1.4) color-mix(in oklch, black 26%, transparent);
+  transition: filter 320ms var(--caughtlight-ease);
+}
+
+:where(.caughtlight[data-gl='off']) {
+  /* The body stands on the page: a tight contact shadow, then two longer ones, all down and right. */
+  box-shadow:
+    calc(var(--caughtlight-unit) * 0.06) calc(var(--caughtlight-unit) * 0.12) calc(var(--caughtlight-unit) * 0.14) color-mix(in oklch, var(--caughtlight-shade) 46%, transparent),
+    calc(var(--caughtlight-unit) * 0.3) calc(var(--caughtlight-unit) * 0.5) calc(var(--caughtlight-unit) * 0.9) color-mix(in oklch, var(--caughtlight-shade) 30%, transparent),
+    calc(var(--caughtlight-unit) * 0.9) calc(var(--caughtlight-unit) * 1.5) calc(var(--caughtlight-unit) * 3) color-mix(in oklch, var(--caughtlight-shade) 22%, transparent);
+}
+
+:where(.caughtlight[data-gl='off']) :where(.caughtlight-canvas) {
+  visibility: hidden;
+}
+
+:where(.caughtlight[data-gl='off']) :where(.caughtlight-drawn) {
+  display: block;
+}
+
+:where(.caughtlight-drawn) svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 260ms var(--caughtlight-ease);
+}
+
+:where(.caughtlight-drawn) path {
+  fill: none;
+  stroke: color-mix(in oklch, var(--caughtlight-glass), black 55%);
+  stroke-width: calc(var(--caughtlight-unit) * 0.16);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+:where(.caughtlight-drawn) polygon {
+  fill: color-mix(in oklch, var(--caughtlight-light) 62%, var(--caughtlight-glass));
+  opacity: 0;
+  animation: caughtlight-pass 1.6s linear infinite;
+}
+
+:where(.caughtlight[data-status='working']) :where(.caughtlight-drawn) svg {
+  opacity: 0.9;
+}
+
+:where(.caughtlight[data-gl='off'][data-status='done']) :where(.caughtlight-drawn) {
+  background:
+    radial-gradient(ellipse 5% 17% at 8% 33%, white 0 62%, transparent 70%),
+    radial-gradient(closest-side, var(--caughtlight-light) 62%, color-mix(in oklch, var(--caughtlight-light), var(--caughtlight-glass) 26%));
+}
+
+:where(.caughtlight[data-gl='off'][data-status='failed']) :where(.caughtlight-drawn),
+:where(.caughtlight[data-gl='off']:disabled) :where(.caughtlight-drawn) {
+  filter: saturate(0.3) brightness(0.86);
+}
+
+@keyframes caughtlight-pass {
+  0%,
+  26%,
+  100% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.caughtlight-word),
+  :where(.caughtlight-words) {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    transform: none !important;
+  }
+
+  :where(.caughtlight-drawn) polygon {
+    animation: none;
+  }
+
+  :where(.caughtlight-drawn) polygon:first-child {
+    opacity: 0.7;
+  }
+}

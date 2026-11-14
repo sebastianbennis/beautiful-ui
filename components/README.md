@@ -6,6 +6,7 @@ Open any UI for a preview and its install command.
 
 | UI | What it is |
 | --- | --- |
+| [Crystal button](./crystal-button) | A Generate button made of one piece of crystal that comes apart into cells while the job runs |
 | [Glass player](./glass-player) | A music player with five glass keys and a ribbon of music you can drag under a glass lens |
 | [Pin upload](./pin-upload) | A drag and drop upload for huge video files, on a plate of pins that becomes the video |
 | [Liquid navbar](./liquid-navbar) | A navigation bar of black liquid that drips into the sea, with a storm and a sunny day |

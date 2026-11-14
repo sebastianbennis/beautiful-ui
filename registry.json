@@ -4,6 +4,49 @@
   "homepage": "https://github.com/sebastianbennis/beautiful-ui",
   "items": [
     {
+      "name": "crystal-button",
+      "type": "registry:item",
+      "title": "Crystal button",
+      "description": "A Generate button made of one piece of crystal that comes apart into cells while the job runs.",
+      "files": [
+        {
+          "path": "components/crystal-button/src/caughtlight.css",
+          "type": "registry:file",
+          "target": "components/crystal-button/caughtlight.css"
+        },
+        {
+          "path": "components/crystal-button/src/engine.ts",
+          "type": "registry:file",
+          "target": "components/crystal-button/engine.ts"
+        },
+        {
+          "path": "components/crystal-button/src/GenerateButton.tsx",
+          "type": "registry:file",
+          "target": "components/crystal-button/GenerateButton.tsx"
+        },
+        {
+          "path": "components/crystal-button/src/index.ts",
+          "type": "registry:file",
+          "target": "components/crystal-button/index.ts"
+        },
+        {
+          "path": "components/crystal-button/src/optics.ts",
+          "type": "registry:file",
+          "target": "components/crystal-button/optics.ts"
+        },
+        {
+          "path": "components/crystal-button/src/shaders.ts",
+          "type": "registry:file",
+          "target": "components/crystal-button/shaders.ts"
+        },
+        {
+          "path": "components/crystal-button/src/types.ts",
+          "type": "registry:file",
+          "target": "components/crystal-button/types.ts"
+        }
+      ]
+    },
+    {
       "name": "glass-player",
       "type": "registry:item",
       "title": "Glass player",
